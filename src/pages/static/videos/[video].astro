@@ -1,0 +1,28 @@
+---
+export const prerender = true;
+export function getStaticPaths() {
+  return [
+    {
+      params: { video: "riko" },
+      props: {
+        title: "First and the last",
+        year: 1987
+      },
+    },
+    {
+      params: { video: "sonya" },
+      props: {
+        title: "Now or never",
+        year: 1997
+      },
+    },
+  ];
+}
+
+const { title, year } = Astro.props;
+console.log(`Static page 🐇🐇🐇`)
+---
+
+<div id="video-static-page">
+  <span class="text-red-700 text-lg italic font-semibold">{title}</span> from <span class="text-green-500">{year}</span>
+</div>

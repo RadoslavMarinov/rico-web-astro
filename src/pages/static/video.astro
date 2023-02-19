@@ -1,0 +1,16 @@
+---
+const videos = [
+  {
+    title: "Green Path",
+    year: 1988,
+  },
+  {
+    title: "Last Mouchican",
+    year: 1991,
+  },
+];
+---
+<div id="video-page">
+<ul>{videos.map(v=><li>{v.title} - {v.year}</li>)}</ul>
+
+</div>
