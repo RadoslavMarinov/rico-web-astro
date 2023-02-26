@@ -1,5 +1,5 @@
 import React, { useReducer } from 'react'
-import PickTrade from '../select/pick-trade/PickTrade'
+import PickTrade from './pick-trade/PickTrade'
 import BookTrade from './book-trade/BookTrade'
 import GetQuote from './get-quote/GetQuote'
 import InstructPayment from './instruct-payment/InstructPayment'

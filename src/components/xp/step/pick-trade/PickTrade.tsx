@@ -1,4 +1,4 @@
-import { StepComp } from "../../step/Steps"
+import { StepComp } from "../Steps"
 
 const PickTrade: StepComp = ({ back, done }) => {
   return <div>

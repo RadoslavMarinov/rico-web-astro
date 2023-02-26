@@ -1,13 +1,14 @@
 ---
 import Wrapper from '../components/xp/step/Steps';
-import Steps from '../components/xp/step/Steps';
+import SimpleStateMachine from '../components/xp/xstate/learn/tut1'
 import Layout from '../layouts/Layout.astro'
+import Transfer from '../components/transfer/Transfer'
 ---
 <>
   <Layout title="Rico Atro Nauth">
     <h1>Hello</h1>
   </Layout>
-  <Wrapper client:visible></Wrapper>
+  <Transfer client:visible/>
 </>
 <style>
   h1 {
