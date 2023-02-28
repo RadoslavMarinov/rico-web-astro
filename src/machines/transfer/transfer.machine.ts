@@ -2,13 +2,14 @@ import { assign, createMachine } from "xstate";
 import { Trade } from "../../models/trade/Trade";
 
 export const transferMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QBUBOBDAdrAZmVABALLoDGAFgJaZgB0ACpaQNYFroRgDEEA9jbWoA3XszrtseQiQrU6jFmwycEw3qXQAXSvwDaABgC6Bw4lAAHXrErb+ZkAA9EAJgAsARlquAnPoCszt5+AOwAbM76wc4ANCAAnoju7qEAvimxErj4xGRUAgqs7Jw8-HRqYrSZUjmy+UyFymCqmCIatpgmuu6mSCCW1u32TghurrQhkX4AzEmhU9Mx8YneABy0QTNTzuHeU96ufmkZGJLZMnny9Uoc3PiovKi05gA2WjgPALaVJ1nSuXIMK5FJpqNo6DpGEz2fo2cFDRAAWjCtFCrmczhWgWcU2C3gxsQSI1cqXSICqZ3+AgA4mBNAQAIoAV14mjoADFKM9ngQ2Z8uABJTDmRl0gDC5CwMChvRhg16wxWUymtHcUxW3lCwUi4Uii0J7l2KNWPkiPkVozSpMwvE48F65L+tTA0KssLs8sR7mcwVo+n0yRCeJxeJWBMQax83ij2K1oX8xO8RzJP2q5wBBWunBdAzhHoQSO8vv9oUDMZDYYQGqTDpqF1oNLpTJZzplrrloGGc0LqvVmu1ESiFfc+lCKuNvmCZq2rlc1ZTFKd9dpDOZrNoHK5PM+2bdmHhCFCKx9PY1WrCA71LmSXmcfn809W09npJraYEgtgmlQjNI2kwUAIeh0DiD4wEwTQd3bRwXEndZHzRftdQreZCz9ND0PQkljiwX5awBABRVB7lQSDcw7RE-D8IsA1xMsMRHZDiUtFIgA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QBUBOBDAdrAZmVABALLoDGAFgJaZgB0AMgPboTVQFotwDEEjNtagDdGAazqdseQiQrU6TFmw4YIcBMMal0AF0r8A2gAYAusZOJQAB0axKe-pZAAPRAFoAjAFYPtbwDYATg8AZg8PAA5-AHYAFmjogBoQAE9EDzjaWIAmI39siKMIiMCjbNivAF9K5MlcfGIyKgFFVkx2TjVYXn46TXFaOulGuRbmNo7VdU1tB0xzAw8LJBAbOzmnVwRPWIi-INijIw9sr39d-wjktIRs-yNaCPicwOijL1LY6tqMKQbZZoKcbKTo8fCoRioWhWAA2uhwkIAtoNfvUZE15Axge0VFxYBpMCJZvp5qZzE41vYSZt0qdaMdjl4wnETt4kqlEEF6R8jPEIiEItFwmFviAhv8MQIAAqUUiiXFqbigggAZTAMLApB05JWlI2Ky2OWitEC-n8IUCIWi-lCJUCXmu6Wi2RNuXNHlKApCZy+NTFqOGAMxAHEwDoCABFACujB0dAAYpQYTCCPGkdwAJKYKxR8MAYXIWBgOustipjgN6TKtCFuXt2St2SFsX8joQPgeOXORhC+UCuRCd2qfswjC6TnF6NGYApZf1oC2nkCgT8Z2CYUiMXi7JubliISyh3tT0Cgs+UVFk5GgKxShxoPgurn1Mr21ttAtvMH3g8sU+O8QWJYm5T47n7e4vC8IDLwDCVp1oGU5QVGcn3WF8F3SZcP1-V4wnKZdhTbD0vEeCobS3QcLSqP0ryDARQ3DaNYxQ0s0IrDDtmCWgCmif98mdCIoLbHIXXAi1yK8bJ7RiGCsDRa8QzDSMYzjWhE2TVMkVnNjMBpbZ924s9eWtJsCig2I2yZA9vCks0Tn7HsQlkv4pxvLNYB0VAoy1ZQpXQFJETATAdG08tdNfESsleGI7kHV5fzbSjaDOS4NwKRzsmc+S6LoABRVAIVQUL5xcRAktKU8Mg8d5dmCCyOQQGJkp5SSTkOaIvDKYdKiAA */
   createMachine(
     {
       id: "Transfer Machine",
-      initial: "Pick Trade",
+      initial: "Loading Trades",
       context: {
         trades: [] as Trade[],
+        currentTrade: {} as Trade,
         errorMessage: undefined as string | undefined,
         quoteFormData: {} as {
           currencyBuy: string;
@@ -16,29 +17,36 @@ export const transferMachine =
           sellAmount: string;
         },
       },
+      tsTypes: {} as import("./transfer.machine.typegen").Typegen0 ,
       schema: {
+        services:{} as {
+          getTrades: {
+            type: string
+            data: Trade[]
+          } 
+        },
         events: {} as
           | {
-              type: string;
-              data: Trade[];
-            }
+            type: "Input Change";
+            value: string;
+          }
           | {
-              type: "Input Change";
-              value: string;
-            },
+            type: "Trade Select",
+            trade: Trade
+          }
       },
       states: {
-        "Pick Trade": {
+        "Loading Trades": {
           invoke: {
             src: "getTrades", // Service name
             onDone: [
               {
                 actions: "assignTradesToContext",
                 cond: "Has Trades",
-                target: "Get Quote",
+                target: "Pick Trade",
               },
               {
-                target: "Instructing Payment",
+                target: "Get Quote",
               },
             ],
             onError: [
@@ -48,6 +56,15 @@ export const transferMachine =
             ],
           },
         },
+        "Pick Trade": {
+          on: {
+            "Trade Select": {
+              actions: "assignCurrentTrade",
+              target: "Instructing Payment"
+            }
+          }
+        },
+
         "Get Quote": {
           initial: "Fill Form",
           states: {
@@ -60,15 +77,17 @@ export const transferMachine =
             },
           },
         },
+
         "Instructing Payment": {},
         Error: {},
       },
     },
     {
-      guards:{
+      guards: {
         "Has Trades": (context, event) => {
-          console.log(`EVENT `,event);
-          return (event as {data: Trade[]}).data.length > 0}
+          console.log(`EVENT `, event);
+          return (event as { data: Trade[] }).data.length > 0
+        }
       },
       actions: {
         assignTradesToContext: assign((context, event) => {
@@ -80,10 +99,17 @@ export const transferMachine =
         assignQuoteFormInputToContext: assign((context, event) => {
           return {
             quoteFormData: {
-              currencyBuy: event.value,
+              ...context.quoteFormData,
+              currencyBuy: event.value
             },
           };
         }),
+        assignCurrentTrade: assign((context, event) => {
+          console.log(`assignCurrentTrade Event = `, event)
+          return {
+            currentTrade: event.trade
+          }
+        })
       },
     }
   );
