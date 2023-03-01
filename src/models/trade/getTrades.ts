@@ -2,7 +2,7 @@ import { Trade } from "./Trade";
 
 const trades: Trade[] = [
   {
-    id:1,
+    id: 1,
     date: "2022-05-04",
     amountBuy: 1.55,
     amountSell: 2.55,
@@ -10,7 +10,7 @@ const trades: Trade[] = [
     currencySell: "EUR",
   },
   {
-    id:2,
+    id: 2,
     date: "2023-01-04",
     amountBuy: 1.55,
     amountSell: 3.12,
@@ -18,7 +18,7 @@ const trades: Trade[] = [
     currencySell: "BGN",
   },
   {
-    id:3,
+    id: 3,
     date: "2023-01-04",
     amountBuy: 1.55,
     amountSell: 3.12,
@@ -27,21 +27,20 @@ const trades: Trade[] = [
   },
 ];
 
-
 type GetTradeOptions = {
-  delayMs?: number,
-  error?: string
-  numberOfTrades?: number
-}
-export const getTrades = async (options?: GetTradeOptions) => {
-  return new Promise((resolve, reject)=>{
-    setTimeout(()=>{
+  delayMs?: number;
+  error?: string;
+  numberOfTrades?: number;
+};
+export const getTrades = async (options?: GetTradeOptions):Promise<Trade[]> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
       // if(options?.error) return reject(options.error)
-      if(typeof options.numberOfTrades !== 'undefined'){
-        return resolve(trades.slice(0,options?.numberOfTrades))
+      if (typeof options.numberOfTrades !== "undefined") {
+        return resolve(trades.slice(0, options?.numberOfTrades));
       } else {
-        resolve(trades)
+        resolve(trades);
       }
-    }, options?.delayMs ?? 1000 )
-  })
-}
+    }, options?.delayMs ?? 1000);
+  });
+};

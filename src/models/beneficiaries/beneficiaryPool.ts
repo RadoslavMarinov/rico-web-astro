@@ -1,0 +1,39 @@
+import { Beneficiary } from "./Beneficiary";
+
+export const beneficiaries:Beneficiary[] = [
+  {
+    id:"1",
+    currency:"EUR",
+    iban:"wqghhuyyyt"
+  },
+  {
+    id:"2",
+    currency:"GBP",
+    iban:"nefwgwgv"
+  },
+  {
+    id:"3",
+    currency:"USD",
+    iban:"fshgwrw434"
+  },
+  {
+    id:"4",
+    currency:"GBP",
+    iban:"htehe23"
+  },
+  {
+    id:"5",
+    currency:"EUR",
+    iban:"124rafaf"
+  },
+  {
+    id:"6",
+    currency:"EUR",
+    iban:"qjpjqwjhgd"
+  },
+  {
+    id:"7",
+    currency:"USD",
+    iban:"asdasdasdqe"
+  }
+]
