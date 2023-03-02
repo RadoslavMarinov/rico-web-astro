@@ -20,15 +20,15 @@ export const transferMachine =
           sellAmount: string;
         },
       },
-      tsTypes: {} as import("./transfer.machine.typegen").Typegen0 ,
+      tsTypes: {} as import("./transfer.machine.typegen").Typegen0,
       schema: {
-        services:{} as {
+        services: {} as {
           getTrades: {
             type: string
             data: Trade[]
           }
-          loadBeneficiaries:{
-            type:string
+          loadBeneficiaries: {
+            type: string
             data: Beneficiary[]
           }
         },
@@ -40,6 +40,10 @@ export const transferMachine =
           | {
             type: "Trade Select",
             trade: Trade
+          } | {
+            type: "GO_BACK"
+          } | {
+            type: "GO_NEXT"
           }
       },
       states: {
@@ -63,31 +67,37 @@ export const transferMachine =
             ],
           },
         },
-        
+
         "Pick Trade": {
           on: {
             "Trade Select": {
               actions: "assignCurrentTrade",
               target: "Choose Beneficiaries"
+            },
+            GO_BACK: {
+              target: "Loading Trades"
             }
           }
         },
-        "Choose Beneficiaries":{
-          
+        "Choose Beneficiaries": {
+          on:{
+            GO_BACK: {
+              target: "Pick Trade"
+            }
+          },
+          initial: "Load Beneficiaries",
           states: {
             "Load Beneficiaries": {
-              invoke:{
+              invoke: {
                 src: "loadBeneficiaries",
                 onDone: {
-                  actions:["assignBeneficiariesToContext"],
+                  actions: ["assignBeneficiariesToContext"],
                   target: "Select Beneficiaries"
                 }
-              },    
+              },
             },
             "Select Beneficiaries": {}
           },
-
-          initial: "Load Beneficiaries"
         },
         "Get Quote": {
           initial: "Fill Form",

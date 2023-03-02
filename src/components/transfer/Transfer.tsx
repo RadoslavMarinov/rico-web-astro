@@ -7,14 +7,14 @@ import {
   getAllByCurrency,
 } from "../../models/beneficiaries/getBeneficiaries";
 
-interface TransferProps extends React.PropsWithChildren {}
+interface TransferProps extends React.PropsWithChildren { }
 
 const Transfer: React.FC = ({ children }: TransferProps) => {
   const [state, send] = useMachine(transferMachine, {
     services: {
-      getTrades: async () => getTrades({ delayMs: 500, numberOfTrades: 2 }),
+      getTrades: async () => getTrades({ delayMs: 300, numberOfTrades: 8 }),
       loadBeneficiaries: (context) =>
-        getAllByCurrency(context.currentTrade.currencyBuy),
+        getAllByCurrency(context.currentTrade.currencyBuy, {latencyMS: 300}),
     },
     actions: {},
   });
@@ -64,6 +64,16 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
                 );
               })}
             </div>
+            <div>
+              <button
+                className="m-2 px-5 py-2 bg-red-400"
+                onClick={() => send("GO_BACK")}>Back
+              </button>
+              {/* <button
+                className="mx-2 px-5 py-2 bg-blue-400"
+                onClick={() => send("GO_NEXT")}>Next
+              </button> */}
+            </div>
           </div>
         )}
         {state.matches("Choose Beneficiaries") && (
@@ -76,7 +86,7 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
                 <div className="mx-4  border-solid border-2 border-red-200">
                   <div className="flex flex-row [&>*]:w-1/4 [&>*]:text-center">
                     <div className="flex flex-col justify-center">
-                        {b.id}
+                      {b.id}
                     </div>
                     <div>{b.currency}</div>
                     <div>{b.iban}</div>
@@ -85,6 +95,12 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
                 </div>
               );
             })}
+            <div className="flex flex-col items-center">
+              <button
+                className="w-[5rem] m-2 px-5 py-2 bg-red-400"
+                onClick={() => send("GO_BACK")}>Back
+              </button>
+            </div>
           </div>
         )}
         {state.matches("Instructing Payment") && (

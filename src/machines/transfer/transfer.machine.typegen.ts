@@ -31,7 +31,7 @@
           "Has Trades": "done.invoke.Transfer Machine.Loading Trades:invocation[0]";
         };
         eventsCausingServices: {
-          "getTrades": "xstate.init";
+          "getTrades": "GO_BACK" | "xstate.init";
 "loadBeneficiaries": "Trade Select";
         };
         matchesStates: "Choose Beneficiaries" | "Choose Beneficiaries.Load Beneficiaries" | "Choose Beneficiaries.Select Beneficiaries" | "Error" | "Get Quote" | "Get Quote.Fill Form" | "Instructing Payment" | "Loading Trades" | "Pick Trade" | { "Choose Beneficiaries"?: "Load Beneficiaries" | "Select Beneficiaries";
