@@ -22,56 +22,41 @@ function withDebounce(cb, dbTime = 1000) {
 
 const onBuyAmountChangeDispatcher = withDebounce(
   async (state: State, dispatch: React.Dispatch<Action>) => {
-    switch (state._state) {
-      case "INPUTTING_BUY_AMOUNT": {
-        // -- Calculate sell amount and set
-        const randQuote = await getRandomRate();
-        const sellAmount = (
-          parseFloat(state.buyAmount) / randQuote
-        ).toString();
-        console.log(
-          `Buy = ${state.buyAmount}, calculatedSellAmount = ${sellAmount} with rate =${randQuote}`
-        );
-        dispatch({
-          type: "SELL_AMOUNT_CALCULATED",
-          value: sellAmount,
-        });
-        return;
-      }
+    if (state._state == "INPUTTING_BUY_AMOUNT") {
+      const randQuote = await getRandomRate();
+      const sellAmount = (
+        parseFloat(state.buyAmount) / randQuote
+      ).toString();
+      dispatch({
+        type: "SELL_AMOUNT_CALCULATED",
+        value: sellAmount,
+      });
     }
   }
 );
 
 const onSellAmountChangeDispatcher = withDebounce(
   async (state: State, dispatch: React.Dispatch<Action>) => {
-    switch (state._state) {
-      case "INPUTTING_SELL_AMOUNT": {
-        // -- Get quote calculate Buy amount and update
-        const randQuote = await getRandomRate();
-        const buyAmount = (
-          parseFloat(state.sellAmount) * randQuote
-        ).toString();
-        console.log(
-          `Sell = ${state.sellAmount}, canclulatedBuyAmount = ${buyAmount} with rate =${randQuote}`
-        );
-        dispatch({
-          type: "BUY_AMOUNT_CALCULATED",
-          value: buyAmount,
-        });
-        return;
-      }
+    if (state._state === "INPUTTING_SELL_AMOUNT") {
+      const randQuote = await getRandomRate();
+      const buyAmount = (
+        parseFloat(state.sellAmount) * randQuote
+      ).toString();
+      dispatch({
+        type: "BUY_AMOUNT_CALCULATED",
+        value: buyAmount,
+      });
     }
   }
 );
 
 type State = {
   _state:
+    | "IDLE"
     | "INPUTTING_SELL_AMOUNT"
-    | "SELL_AMOUNT_CALCULATED"
     | "INPUTTING_BUY_AMOUNT"
-    | "BUY_AMOUNT_CALCULATED"
-    | "UPDATING_RATE"
-    | "IDLE";
+    | "DONE";
+
   currencySell: string;
   currencyBuy: string;
   buyAmount: string;
@@ -86,7 +71,6 @@ type Action =
     }
   | {
       type: "SELL_AMOUNT_CHANGE";
-      evSource: "input field" | "quote response";
       value: string;
     }
   | {
@@ -95,7 +79,6 @@ type Action =
     }
   | {
       type: "BUY_AMOUNT_CHANGE";
-      evSource: "input field" | "quote response";
       value: string;
     }
   | {
@@ -108,10 +91,10 @@ type Action =
     };
 
 function reducer(state: State, action: Action): State {
+  console.log(`EVENT -> `, action.type);
   switch (action.type) {
     // --------------
     case "SUBMIT": {
-      console.log(`SUBMIT QUOTE FORM -> `, state);
       const amountBuy = parseFloat(state.buyAmount);
       const amountSell = parseFloat(state.sellAmount);
       action.cb({
@@ -121,24 +104,21 @@ function reducer(state: State, action: Action): State {
         amountBuy,
         rate: amountSell / amountBuy,
       });
-      return state;
+      return {
+        ...state,
+      };
     }
     // --------------
     case "SELL_AMOUNT_CHANGE": {
       const sellAmount = action.value.replace(/[^0-9\.]/g, "");
-      console.log(`SELL_AMOUNT_CHANGE -> `, sellAmount, state._state);
       switch (state._state) {
         case "IDLE":
+        case "DONE":
         case "INPUTTING_BUY_AMOUNT":
-        case "SELL_AMOUNT_CALCULATED":
-        case "BUY_AMOUNT_CALCULATED":
         case "INPUTTING_SELL_AMOUNT": {
           return {
             ...state,
-            _state:
-              action.evSource === "input field"
-                ? "INPUTTING_SELL_AMOUNT"
-                : state._state,
+            _state: "INPUTTING_SELL_AMOUNT",
             sellAmount,
           };
         }
@@ -148,18 +128,12 @@ function reducer(state: State, action: Action): State {
     // --------------
     case "SELL_AMOUNT_CALCULATED": {
       const sellAmount = action.value.replace(/[^0-9\.]/g, "");
-      console.log(
-        `EV:SELL_AMOUNT_CALCULATED -> `,
-        sellAmount,
-        state._state
-      );
-
       switch (state._state) {
         case "INPUTTING_BUY_AMOUNT": {
           return {
             ...state,
             sellAmount,
-            _state: "SELL_AMOUNT_CALCULATED",
+            _state: "DONE",
           };
         }
       }
@@ -168,19 +142,14 @@ function reducer(state: State, action: Action): State {
     // --------------
     case "BUY_AMOUNT_CHANGE": {
       const buyAmount = action.value.replace(/[^0-9\.]/g, "");
-      console.log(`BUY_AMOUNT_CHANGE -> `, buyAmount, state._state);
       switch (state._state) {
+        case "IDLE":
+        case "DONE":
         case "INPUTTING_SELL_AMOUNT":
-        case "UPDATING_RATE":
-        case "BUY_AMOUNT_CALCULATED":
-        case "SELL_AMOUNT_CALCULATED":
         case "INPUTTING_BUY_AMOUNT": {
           return {
             ...state,
-            _state:
-              action.evSource === "input field"
-                ? "INPUTTING_BUY_AMOUNT"
-                : state._state,
+            _state: "INPUTTING_BUY_AMOUNT",
             buyAmount,
           };
         }
@@ -190,24 +159,17 @@ function reducer(state: State, action: Action): State {
     // --------------
     case "BUY_AMOUNT_CALCULATED": {
       const buyAmount = action.value.replace(/[^0-9\.]/g, "");
-      console.log(
-        `EV:BUY_AMOUNT_CALCULATED -> `,
-        buyAmount,
-        state._state
-      );
       switch (state._state) {
         case "INPUTTING_SELL_AMOUNT": {
           return {
             ...state,
             buyAmount,
-            _state: "BUY_AMOUNT_CALCULATED",
-
+            _state: "DONE",
           };
         }
       }
       return state;
     }
-
     // --------------
     case "GOTO": {
       return {
@@ -215,7 +177,7 @@ function reducer(state: State, action: Action): State {
         _state: action.state,
       };
     }
-
+    // --------------
     default:
       return state;
   }
@@ -260,20 +222,28 @@ const QuoteForm: React.FC<QuoteFormProps> = ({
           <span className="text-lg text-gray-600 w-[4em]">
             You sell
           </span>
-          <input
-            value={state.sellAmount}
-            onChange={(e) => {
-              // dispatch({ type: "GOTO", state: "INPUTTING_SELL_AMOUNT" });
-              dispatch({
-                type: "SELL_AMOUNT_CHANGE",
-                value: e.target.value,
-                evSource: "input field",
-              });
-            }}
-            className="w-[22em] p-2.5 mx-2 outline-none text-sm text-gray-900 rounded-md bg-gray-50 border border-gray-300   focus:border-2 focus:border-blue-500"
-            type="text"
-            placeholder="Sell amount"
-          />
+          <div className="block relative">
+            {state._state === "INPUTTING_BUY_AMOUNT" && (
+              <div
+                id="spinner-buy"
+                className="absolute top-1 left-[40%]"
+              >
+                <Spinner1 />
+              </div>
+            )}
+            <input
+              value={state.sellAmount}
+              onChange={(e) => {
+                dispatch({
+                  type: "SELL_AMOUNT_CHANGE",
+                  value: e.target.value,
+                });
+              }}
+              className="w-[22em] p-2.5 mx-2 outline-none text-sm text-gray-900 rounded-md bg-gray-50 border border-gray-300   focus:border-2 focus:border-blue-500"
+              type="text"
+              placeholder="Sell amount"
+            />
+          </div>
         </label>
         <label className="my-3 flex flex-row justify-center items-center relative">
           <span className="text-lg text-gray-600 w-[4em]">
@@ -291,11 +261,9 @@ const QuoteForm: React.FC<QuoteFormProps> = ({
             <input
               value={state.buyAmount}
               onChange={(e) => {
-                // dispatch({ type: "GOTO", state: "INPUTTING" });
                 dispatch({
                   type: "BUY_AMOUNT_CHANGE",
                   value: e.target.value,
-                  evSource: "input field",
                 });
               }}
               className="w-[22em] p-2.5 mx-2 outline-none text-sm text-gray-900 rounded-md bg-gray-50 border border-gray-300   focus:border-2 focus:border-blue-500"
