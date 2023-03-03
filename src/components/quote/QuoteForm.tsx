@@ -33,9 +33,8 @@ const onBuyAmountChangeDispatcher = withDebounce(
           `Buy = ${state.buyAmount}, calculatedSellAmount = ${sellAmount} with rate =${randQuote}`
         );
         dispatch({
-          type: "SELL_AMOUNT_CHANGE",
+          type: "SELL_AMOUNT_CALCULATED",
           value: sellAmount,
-          evSource: "quote response",
         });
         return;
       }
@@ -56,9 +55,8 @@ const onSellAmountChangeDispatcher = withDebounce(
           `Sell = ${state.sellAmount}, canclulatedBuyAmount = ${buyAmount} with rate =${randQuote}`
         );
         dispatch({
-          type: "BUY_AMOUNT_CHANGE",
+          type: "BUY_AMOUNT_CALCULATED",
           value: buyAmount,
-          evSource: "quote response",
         });
         return;
       }
@@ -100,7 +98,7 @@ type Action =
       evSource: "input field" | "quote response";
       value: string;
     }
-    | {
+  | {
       type: "BUY_AMOUNT_CALCULATED";
       value: string;
     }
@@ -132,6 +130,8 @@ function reducer(state: State, action: Action): State {
       switch (state._state) {
         case "IDLE":
         case "INPUTTING_BUY_AMOUNT":
+        case "SELL_AMOUNT_CALCULATED":
+        case "BUY_AMOUNT_CALCULATED":
         case "INPUTTING_SELL_AMOUNT": {
           return {
             ...state,
@@ -146,12 +146,34 @@ function reducer(state: State, action: Action): State {
       return state;
     }
     // --------------
+    case "SELL_AMOUNT_CALCULATED": {
+      const sellAmount = action.value.replace(/[^0-9\.]/g, "");
+      console.log(
+        `EV:SELL_AMOUNT_CALCULATED -> `,
+        sellAmount,
+        state._state
+      );
+
+      switch (state._state) {
+        case "INPUTTING_BUY_AMOUNT": {
+          return {
+            ...state,
+            sellAmount,
+            _state: "SELL_AMOUNT_CALCULATED",
+          };
+        }
+      }
+      return state;
+    }
+    // --------------
     case "BUY_AMOUNT_CHANGE": {
       const buyAmount = action.value.replace(/[^0-9\.]/g, "");
       console.log(`BUY_AMOUNT_CHANGE -> `, buyAmount, state._state);
       switch (state._state) {
         case "INPUTTING_SELL_AMOUNT":
         case "UPDATING_RATE":
+        case "BUY_AMOUNT_CALCULATED":
+        case "SELL_AMOUNT_CALCULATED":
         case "INPUTTING_BUY_AMOUNT": {
           return {
             ...state,
@@ -166,6 +188,25 @@ function reducer(state: State, action: Action): State {
       return state;
     }
     // --------------
+    case "BUY_AMOUNT_CALCULATED": {
+      const buyAmount = action.value.replace(/[^0-9\.]/g, "");
+      console.log(
+        `EV:BUY_AMOUNT_CALCULATED -> `,
+        buyAmount,
+        state._state
+      );
+      switch (state._state) {
+        case "INPUTTING_SELL_AMOUNT": {
+          return {
+            ...state,
+            buyAmount,
+            _state: "BUY_AMOUNT_CALCULATED",
+
+          };
+        }
+      }
+      return state;
+    }
 
     // --------------
     case "GOTO": {
