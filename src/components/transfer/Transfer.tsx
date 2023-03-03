@@ -6,6 +6,7 @@ import {
   getAllBeneficiaries,
   getAllByCurrency,
 } from "../../models/beneficiaries/getBeneficiaries";
+import QuoteForm from "../quote/QuoteForm";
 
 interface TransferProps extends React.PropsWithChildren { }
 
@@ -29,14 +30,10 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
       </div>
       <div>
         {state.matches("Get Quote") && (
-          <>
-            <input
-              onChange={(e) =>
-                send({ type: "Input Change", value: e.target.value })
-              }
-              type="text"
-            />
-          </>
+          <div className="m-4">
+            <QuoteForm currencyBuy="EUR" currencySell="GBP" onDone={(quote)=>console.log(`TRRade -> `, quote)}/>
+          </div>
+          
         )}
         {state.matches("Pick Trade") && (
           <div className="flex flex-col items-center">
@@ -69,10 +66,10 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
                 className="m-2 px-5 py-2 bg-red-400"
                 onClick={() => send("GO_BACK")}>Back
               </button>
-              {/* <button
-                className="mx-2 px-5 py-2 bg-blue-400"
-                onClick={() => send("GO_NEXT")}>Next
-              </button> */}
+              <button
+                className="mx-2 px-5 py-2 bg-green-300"
+                onClick={() => send("NEW_TRADE")}>New Trade
+              </button>
             </div>
           </div>
         )}

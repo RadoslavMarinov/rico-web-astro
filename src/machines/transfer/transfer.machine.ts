@@ -8,7 +8,8 @@ export const transferMachine =
   createMachine(
     {
       id: "Transfer Machine",
-      initial: "Loading Trades",
+      // initial: "Loading Trades",
+      initial: "Get Quote",
       context: {
         trades: [] as Trade[],
         currentTrade: {} as Trade,
@@ -36,14 +37,15 @@ export const transferMachine =
           | {
             type: "Input Change";
             value: string;
-          }
-          | {
+          } | {
             type: "Trade Select",
             trade: Trade
           } | {
             type: "GO_BACK"
           } | {
             type: "GO_NEXT"
+          } | {
+            type: "NEW_TRADE",
           }
       },
       states: {
@@ -76,7 +78,11 @@ export const transferMachine =
             },
             GO_BACK: {
               target: "Loading Trades"
+            },
+            NEW_TRADE:{
+              target: "Get Quote"
             }
+
           }
         },
         "Choose Beneficiaries": {

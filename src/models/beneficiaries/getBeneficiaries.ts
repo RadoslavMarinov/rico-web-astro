@@ -17,7 +17,7 @@ export const getAllByCurrency = (currency: string, options: Options = {}) =>
     options?.latencyMS
   );
 
-function promisifyWithDelay<T>(data: T, delayMs = 1000): Promise<T> {
+export function promisifyWithDelay<T>(data: T, delayMs = 1000): Promise<T> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(data);
