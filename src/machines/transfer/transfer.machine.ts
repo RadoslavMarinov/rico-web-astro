@@ -1,6 +1,7 @@
 import { assign, createMachine } from "xstate";
 import { Beneficiary } from "../../models/beneficiaries/Beneficiary";
 import { getAllBeneficiaries, getAllByCurrency } from "../../models/beneficiaries/getBeneficiaries";
+import { Quote } from "../../models/quote/Quote";
 import { Trade } from "../../models/trade/Trade";
 
 export const transferMachine =
@@ -8,18 +9,13 @@ export const transferMachine =
   createMachine(
     {
       id: "Transfer Machine",
-      // initial: "Loading Trades",
-      initial: "Get Quote",
+      initial: "Loading Trades",
       context: {
         trades: [] as Trade[],
         currentTrade: {} as Trade,
         beneficiaries: [] as Beneficiary[],
         errorMessage: undefined as string | undefined,
-        quoteFormData: {} as {
-          currencyBuy: string;
-          currencySell: string;
-          sellAmount: string;
-        },
+        quoteFormData: {} as Quote,
       },
       tsTypes: {} as import("./transfer.machine.typegen").Typegen0,
       schema: {
@@ -35,8 +31,8 @@ export const transferMachine =
         },
         events: {} as
           | {
-            type: "Input Change";
-            value: string;
+            type: "QUOTE_READY";
+            quoteData: Quote;
           } | {
             type: "Trade Select",
             trade: Trade
@@ -106,17 +102,23 @@ export const transferMachine =
           },
         },
         "Get Quote": {
-          initial: "Fill Form",
-          states: {
-            "Fill Form": {
-              on: {
-                "Input Change": {
-                  actions: "assignQuoteFormInputToContext",
-                },
-              },
+          on: {
+            "QUOTE_READY": {
+              actions: "assignQuoteFormInputToContext",
+              target: "Book Trade"
             },
+            "GO_BACK":[
+              {
+                target: "Pick Trade",
+                cond: "Has Trades in Context"
+              },{
+                target: "Loading Trades"
+              }
+            ]
           },
+          
         },
+        "Book Trade":{},
 
         "Instructing Payment": {},
         Error: {},
@@ -125,8 +127,14 @@ export const transferMachine =
     {
       guards: {
         "Has Trades": (context, event) => {
-          console.log(`EVENT `, event);
+          console.log(`Condition "Has Trades" on Event: `, event);
           return (event as { data: Trade[] }).data.length > 0
+          // return context.trades.length >= 0
+        },
+        "Has Trades in Context":(context, event)=> {
+          const res = context.trades.length > 0
+          console.log(`Condition "Has Trades in Context" -> `, res)
+          return res
         }
       },
       actions: {
@@ -144,10 +152,7 @@ export const transferMachine =
         }),
         assignQuoteFormInputToContext: assign((context, event) => {
           return {
-            quoteFormData: {
-              ...context.quoteFormData,
-              currencyBuy: event.value
-            },
+            quoteFormData: event.quoteData,
           };
         }),
         assignCurrentTrade: assign((context, event) => {

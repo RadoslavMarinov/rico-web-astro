@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import { getRandomRate } from "../../models/quote/getQuote";
 import { Quote } from "../../models/quote/Quote";
+import { withDebounce } from "../../utils/utils";
 import Spinner1 from "../spinners/Spinner1";
 
 type QuoteFormProps = Omit<
@@ -8,17 +9,8 @@ type QuoteFormProps = Omit<
   "rate" | "amountSell" | "amountBuy"
 > & {
   onDone: (quote: Quote) => void;
+  onBack: () => void;
 };
-
-function withDebounce(cb, dbTime = 1000) {
-  let timer;
-  return function (...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      cb(...args);
-    }, dbTime);
-  };
-}
 
 const onBuyAmountChangeDispatcher = withDebounce(
   async (state: State, dispatch: React.Dispatch<Action>) => {
@@ -55,6 +47,7 @@ type State = {
     | "IDLE"
     | "INPUTTING_SELL_AMOUNT"
     | "INPUTTING_BUY_AMOUNT"
+    | "QUOTE_READY"
     | "DONE";
 
   currencySell: string;
@@ -67,7 +60,6 @@ type State = {
 type Action =
   | {
       type: "SUBMIT";
-      cb: QuoteFormProps["onDone"];
     }
   | {
       type: "SELL_AMOUNT_CHANGE";
@@ -95,25 +87,22 @@ function reducer(state: State, action: Action): State {
   switch (action.type) {
     // --------------
     case "SUBMIT": {
-      const amountBuy = parseFloat(state.buyAmount);
-      const amountSell = parseFloat(state.sellAmount);
-      action.cb({
-        currencySell: state.currencySell,
-        amountSell,
-        currencyBuy: state.currencyBuy,
-        amountBuy,
-        rate: amountSell / amountBuy,
-      });
-      return {
-        ...state,
-      };
+      switch (state._state) {
+        case "QUOTE_READY": {
+          return { ...state, _state: "DONE" };
+        }
+        default: {
+          console.log("Quote is not ready yet");
+        }
+      }
+      return state;
     }
     // --------------
     case "SELL_AMOUNT_CHANGE": {
       const sellAmount = action.value.replace(/[^0-9\.]/g, "");
       switch (state._state) {
         case "IDLE":
-        case "DONE":
+        case "QUOTE_READY":
         case "INPUTTING_BUY_AMOUNT":
         case "INPUTTING_SELL_AMOUNT": {
           return {
@@ -133,7 +122,7 @@ function reducer(state: State, action: Action): State {
           return {
             ...state,
             sellAmount,
-            _state: "DONE",
+            _state: "QUOTE_READY",
           };
         }
       }
@@ -144,7 +133,7 @@ function reducer(state: State, action: Action): State {
       const buyAmount = action.value.replace(/[^0-9\.]/g, "");
       switch (state._state) {
         case "IDLE":
-        case "DONE":
+        case "QUOTE_READY":
         case "INPUTTING_SELL_AMOUNT":
         case "INPUTTING_BUY_AMOUNT": {
           return {
@@ -164,7 +153,7 @@ function reducer(state: State, action: Action): State {
           return {
             ...state,
             buyAmount,
-            _state: "DONE",
+            _state: "QUOTE_READY",
           };
         }
       }
@@ -187,6 +176,7 @@ const QuoteForm: React.FC<QuoteFormProps> = ({
   currencyBuy,
   currencySell,
   onDone,
+  onBack
 }) => {
   const [state, dispatch] = useReducer(reducer, {
     currencyBuy,
@@ -200,10 +190,23 @@ const QuoteForm: React.FC<QuoteFormProps> = ({
   useEffect(() => {
     onSellAmountChangeDispatcher(state, dispatch);
   }, [state.sellAmount]);
-
   useEffect(() => {
     onBuyAmountChangeDispatcher(state, dispatch);
   }, [state.buyAmount]);
+
+  // --
+  useEffect(() => {
+    if (state._state === "DONE") {
+      const amountBuy = parseFloat(state.buyAmount);
+      const amountSell = parseFloat(state.sellAmount);
+      onDone({
+        currencySell: state.currencySell,
+        amountSell,
+        currencyBuy: state.currencyBuy,
+        amountBuy,
+      });
+    }
+  }, [state._state]);
 
   return (
     <div className="px-3 relative flex flex-col justify-center  border border-gray-200 border-solid border-3">
@@ -213,8 +216,7 @@ const QuoteForm: React.FC<QuoteFormProps> = ({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-
-          dispatch({ type: "SUBMIT", cb: onDone });
+          dispatch({ type: "SUBMIT" });
         }}
         className="flex flex-col justify-center"
       >
@@ -273,14 +275,22 @@ const QuoteForm: React.FC<QuoteFormProps> = ({
           </div>
         </label>
 
-        <input
-          className="self-center m-2 cursor-pointer active:bg-red-500 hover:bg-green-500 
+        <div className="flex flex-row items-center justify-center">
+          <button
+            className="m-2 px-5 py-2 bg-red-400"
+            onClick={ onBack}
+          >
+            Back
+          </button>
+          <input
+            className="self-center m-2 cursor-pointer active:bg-red-500 hover:bg-green-500 
           w-[10em] px-6 py-2
            text-white bg-green-600
            hover:shadow-riko"
-          type="submit"
-          value={"Get Quote"}
-        />
+            type="submit"
+            value={"Continue"}
+          />
+        </div>
       </form>
     </div>
   );

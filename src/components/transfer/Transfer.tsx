@@ -8,14 +8,21 @@ import {
 } from "../../models/beneficiaries/getBeneficiaries";
 import QuoteForm from "../quote/QuoteForm";
 
-interface TransferProps extends React.PropsWithChildren { }
+interface TransferProps extends React.PropsWithChildren {}
 
 const Transfer: React.FC = ({ children }: TransferProps) => {
   const [state, send] = useMachine(transferMachine, {
     services: {
-      getTrades: async () => getTrades({ delayMs: 300, numberOfTrades: 8 }),
+      getTrades: async () =>{
+
+        const trades = await getTrades({ delayMs: 300, numberOfTrades:8  })
+        console.log('Service getTrades done ', trades)
+        return trades
+      },
       loadBeneficiaries: (context) =>
-        getAllByCurrency(context.currentTrade.currencyBuy, {latencyMS: 300}),
+        getAllByCurrency(context.currentTrade.currencyBuy, {
+          latencyMS: 300,
+        }),
     },
     actions: {},
   });
@@ -31,9 +38,16 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
       <div>
         {state.matches("Get Quote") && (
           <div className="m-4">
-            <QuoteForm currencyBuy="EUR" currencySell="GBP" onDone={(quote)=>console.log(`TRRade -> `, quote)}/>
+            <QuoteForm
+              currencyBuy="EUR"
+              currencySell="GBP"
+              onDone={(quote) => {
+                console.log(`TRRade -> `, quote);
+                send({ type: "QUOTE_READY", quoteData: quote });
+              }}
+              onBack={() => send({ type: "GO_BACK" })}
+            />
           </div>
-          
         )}
         {state.matches("Pick Trade") && (
           <div className="flex flex-col items-center">
@@ -47,7 +61,9 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
               {state.context.trades.map((t) => {
                 return (
                   <div
-                    onClick={() => send({ type: "Trade Select", trade: t })}
+                    onClick={() =>
+                      send({ type: "Trade Select", trade: t })
+                    }
                     key={t.id}
                     className="[&>*]:block [&>*]:px-8 hover:cursor-pointer my-2 flex flex-row justify-between "
                   >
@@ -64,11 +80,15 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
             <div>
               <button
                 className="m-2 px-5 py-2 bg-red-400"
-                onClick={() => send("GO_BACK")}>Back
+                onClick={() => send("GO_BACK")}
+              >
+                Back
               </button>
               <button
                 className="mx-2 px-5 py-2 bg-green-300"
-                onClick={() => send("NEW_TRADE")}>New Trade
+                onClick={() => send("NEW_TRADE")}
+              >
+                New Trade
               </button>
             </div>
           </div>
@@ -95,14 +115,18 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
             <div className="flex flex-col items-center">
               <button
                 className="w-[5rem] m-2 px-5 py-2 bg-red-400"
-                onClick={() => send("GO_BACK")}>Back
+                onClick={() => send("GO_BACK")}
+              >
+                Back
               </button>
             </div>
           </div>
         )}
         {state.matches("Instructing Payment") && (
           <div id="instruct-payment-cont">
-            <h1>Selected Trade with ID = {state.context.currentTrade.id}</h1>
+            <h1>
+              Selected Trade with ID = {state.context.currentTrade.id}
+            </h1>
           </div>
         )}
       </div>

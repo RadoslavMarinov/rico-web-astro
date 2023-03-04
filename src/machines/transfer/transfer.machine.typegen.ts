@@ -21,7 +21,7 @@
         eventsCausingActions: {
           "assignBeneficiariesToContext": "done.invoke.Transfer Machine.Choose Beneficiaries.Load Beneficiaries:invocation[0]";
 "assignCurrentTrade": "Trade Select";
-"assignQuoteFormInputToContext": "Input Change";
+"assignQuoteFormInputToContext": "QUOTE_READY";
 "assignTradesToContext": "done.invoke.Transfer Machine.Loading Trades:invocation[0]";
         };
         eventsCausingDelays: {
@@ -29,13 +29,13 @@
         };
         eventsCausingGuards: {
           "Has Trades": "done.invoke.Transfer Machine.Loading Trades:invocation[0]";
+"Has Trades in Context": "GO_BACK";
         };
         eventsCausingServices: {
-          "getTrades": "GO_BACK";
+          "getTrades": "GO_BACK" | "xstate.init";
 "loadBeneficiaries": "Trade Select";
         };
-        matchesStates: "Choose Beneficiaries" | "Choose Beneficiaries.Load Beneficiaries" | "Choose Beneficiaries.Select Beneficiaries" | "Error" | "Get Quote" | "Get Quote.Fill Form" | "Instructing Payment" | "Loading Trades" | "Pick Trade" | { "Choose Beneficiaries"?: "Load Beneficiaries" | "Select Beneficiaries";
-"Get Quote"?: "Fill Form"; };
+        matchesStates: "Book Trade" | "Choose Beneficiaries" | "Choose Beneficiaries.Load Beneficiaries" | "Choose Beneficiaries.Select Beneficiaries" | "Error" | "Get Quote" | "Instructing Payment" | "Loading Trades" | "Pick Trade" | { "Choose Beneficiaries"?: "Load Beneficiaries" | "Select Beneficiaries"; };
         tags: never;
       }
   
