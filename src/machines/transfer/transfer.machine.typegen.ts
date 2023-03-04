@@ -20,7 +20,7 @@
         };
         eventsCausingActions: {
           "assignBeneficiariesToContext": "done.invoke.Transfer Machine.Choose Beneficiaries.Load Beneficiaries:invocation[0]";
-"assignCurrentTrade": "Trade Select";
+"assignCurrentTrade": "DONE" | "Trade Select";
 "assignQuoteFormInputToContext": "QUOTE_READY";
 "assignTradesToContext": "done.invoke.Transfer Machine.Loading Trades:invocation[0]";
         };
@@ -33,9 +33,9 @@
         };
         eventsCausingServices: {
           "getTrades": "GO_BACK" | "xstate.init";
-"loadBeneficiaries": "Trade Select";
+"loadBeneficiaries": "DONE" | "Trade Select";
         };
-        matchesStates: "Book Trade" | "Choose Beneficiaries" | "Choose Beneficiaries.Load Beneficiaries" | "Choose Beneficiaries.Select Beneficiaries" | "Error" | "Get Quote" | "Instructing Payment" | "Loading Trades" | "Pick Trade" | { "Choose Beneficiaries"?: "Load Beneficiaries" | "Select Beneficiaries"; };
+        matchesStates: "Book Trade" | "Choose Beneficiaries" | "Choose Beneficiaries.Load Beneficiaries" | "Choose Beneficiaries.Select Beneficiaries" | "Get Quote" | "Instructing Payment" | "Loading Trades" | "Pick Trade" | { "Choose Beneficiaries"?: "Load Beneficiaries" | "Select Beneficiaries"; };
         tags: never;
       }
   

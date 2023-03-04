@@ -15,7 +15,7 @@ type QuoteFormProps = Omit<
 const onBuyAmountChangeDispatcher = withDebounce(
   async (state: State, dispatch: React.Dispatch<Action>) => {
     if (state._state == "INPUTTING_BUY_AMOUNT") {
-      const randQuote = await getRandomRate();
+      const randQuote = await getRandomRate(10);
       const sellAmount = (
         parseFloat(state.buyAmount) / randQuote
       ).toString();
@@ -24,13 +24,13 @@ const onBuyAmountChangeDispatcher = withDebounce(
         value: sellAmount,
       });
     }
-  }
+  }, 300
 );
 
 const onSellAmountChangeDispatcher = withDebounce(
   async (state: State, dispatch: React.Dispatch<Action>) => {
     if (state._state === "INPUTTING_SELL_AMOUNT") {
-      const randQuote = await getRandomRate();
+      const randQuote = await getRandomRate(10);
       const buyAmount = (
         parseFloat(state.sellAmount) * randQuote
       ).toString();
@@ -39,7 +39,7 @@ const onSellAmountChangeDispatcher = withDebounce(
         value: buyAmount,
       });
     }
-  }
+  },300
 );
 
 type State = {

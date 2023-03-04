@@ -7,6 +7,6 @@ function getRandomElement(arr:any[]){
   return quoteRates[idx]
 }
 
-export function getRandomRate(){
-  return promisifyWithDelay(getRandomElement(quoteRates), 1000)
+export function getRandomRate(delayMS = 1000){
+  return promisifyWithDelay(getRandomElement(quoteRates), delayMS)
 }

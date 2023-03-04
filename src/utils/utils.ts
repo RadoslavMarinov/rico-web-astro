@@ -7,3 +7,11 @@ export function withDebounce(cb, dbTime = 1000) {
     }, dbTime);
   };
 }
+
+export function promisify<D>(data:D, delayMS:number = 1000) : Promise<D> {
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      resolve(data)
+    },delayMS)
+  })
+}

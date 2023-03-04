@@ -5,7 +5,7 @@ import { Quote } from "../../models/quote/Quote";
 import { Trade } from "../../models/trade/Trade";
 
 export const transferMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QBUBOBDAdrAZmVABALLoDGAFgJaZgB0AMgPboTVQFotwDEEjNtagDdGAazqdseQiQrU6TFmw4YIcBMMal0AF0r8A2gAYAusZOJQAB0axKe-pZAAPRAFoAjAFYPtbwDYATg8AZg8PAA5-AHYAFmjogBoQAE9EDzjaWIAmI39siKMIiMCjbNivAF9K5MlcfGIyKgFFVkx2TjVYXn46TXFaOulGuRbmNo7VdU1tB0xzAw8LJBAbOzmnVwRPWIi-INijIw9sr39d-wjktIRs-yNaCPicwOijL1LY6tqMKQbZZoKcbKTo8fCoRioWhWAA2uhwkIAtoNfvUZE15Axge0VFxYBpMCJZvp5qZzE41vYSZt0qdaMdjl4wnETt4kqlEEF6R8jPEIiEItFwmFviAhv8MQIAAqUUiiXFqbigggAZTAMLApB05JWlI2Ky2FUCtAS3jN2VO-i80S813SXmytBCu1il2ip2t-itovF6NGdAAwuRGLYwAQAEJgGg4WWUdCoShwLEsCNRsAx0hxhM8PgCfoSVHDAGYoMh2BhyPR2PxxOwZMQVNVzM16aErS6EkLUwU2xUxwGxD82K0XLu7x5DxGBL+O23WIhWhefkC1kZYLvH2FiX+2gAcTAOgIAEUAK6MHR0ABilBhMIIl6R3AAkpgrCfD0GsDAddZe-rQFs0R7EKuSBA6ITukKrqzh8vg5OcRghPkgS5CEITVDUICYIwXROL6IyAj26zUgO2weIExoBMEYSRDE8TsjcbheouYEOh4XqTuO-iblgaIEZirQglM8C6n+JEAe4oR7CEnwhNkZqxJ8DGILEw7vJ8dwofcXheKpPF-H6gK0DKcoKmARF9pgNK3NExphIp0RhOUFHhLOkQLk8ZzsXEckyVUmH4cWAilqGjbptW2Yib+xH9hJCBAf4I5TvJXgTlO0QzhytwPJ8uwRPJ+RWqE3EBVuhklsGoWVuFzaRfWYUZlmtYWf+LiDq6tAxHc5xhNp1puUUWS8ophSBCEulMuhpW8UWkp0Puh6nue5miTFVmkZ43gjoKSn5O6ES6TBiG0FphxIdkKGIXc+l8UF80HseZ4XrQ163veSIteJbXbDE222byGXZPth1Zf4HjDt4F0cRdqFTT8M3bkZL6wDoqAnlqyhSugKSIlGOifbF32TsODldf4cmvKEgSzl6jpnJcNEFIhck3bNO4AKKoBCqAE+tcW+SdRiBBEGSTrpJTgzT0SLjybHlFOqXZKziMVWWFZpo1LZ1mqGpag1EXNatlnWVExr5GEU4i4E85ybOEGJR8IuwSUzz+dUQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QBUBOBDAdrAZmVABALLoDGAFgJaZgB0AMgPboTVQFotwDEEjNtagDdGAazqdseQiQrU6TFmw4YIcBMMal0AF0r8A2gAYAusZOJQAB0axKe-pZAAPRAFoAjAFYPtbwDYATg8AZg8PAA5-AHYAFmjogBoQAE9EDzjaWIAmI39siKMIiMCjbNivAF9K5MlcfGIyKgFFVkx2TjVYXn46TXFaOulGuRbmNo7VdU1tB0xzAw8LJBAbOzmnVwRPWIi-INijIw9sr39d-wjktIRs-yNaCPicwOijL1LY6tqMKQbZZp0AAKlFIohUXG4nTABAAymAADZgUg6cxONb2fSYTbpI6+bKBWIhBLREIhbIeYLXdIxWjZELxe6BMl3EIRELfEBDf5NeS0EFgiFqbgAcQA8gB9ABCAEEAMIAaTRKwxGxWWwysSyL0J+WZYWK1IQRLp0UJ7x871yMSqNS5v3qMl5AgF4Oh3AAcgBRADqEuQACUZQARL3K6y2TGOdWILxGEK0fIfZ5BXKEo0hIzRWiBCInM3E-yXIyBTncp2jOhy8iMWwwqVgGg4UGUdCoSg8cXS+VK0zoyNq0A3XI5oyxWK5kshLwVclXFzpbIUxPTjIM6KhAnZMsO4YAvnV2uweuNsDN0it9twBjjAgNpsttsd7p8AT9CS7nmV2iHut30-npez43iw-4PheT7TJgIizFiCx9iqA5YjiCCvHs47REuHixBkG6BIERozv4tBWvGZrspm047lgjojICtAimAOgEAAigArowOhgNwLEAKpisgXoSgGXohgAmuGqxIdGoAahE2S0F4uTvFmXjErERZGvEDwfPcCR5k8-hnNRfwVvRjHMexnHcV2sqKpJqrITGCDYXs7LRJaZTEoEQRGgUxF5pE2QbhEZwhP4Hj+CZtH7gIFmsRxXGipKdlKks-brE5snpGydLxFElInBEbxeEaZo5l40QRVEBL5rm0V7s6dBSrWbpTMl3b2QhEaZTJC4IHGCmBDOcbRKFbLlFpuaJvSHxeE8Xg+OFDVfvRLViEK3HBmK3oOdJ2LOfSOkRWycbhNhHxlThiZlNhc4zhUETVHamCMF0TjlnR8gZVGB3ZdslKBH4ZzBGEkQxPESSpO4RaKcNM6lN4JzYaWdqfbFCjjMo0LwIhvV-f1ni5SEnzkkjE5jlDNzjiRHxjncgR3Ba44rWZfKuptP2Dv1wVA2EE6kicE7BB4RqRAmC0RRD5Ik7aPw0Y136-seYFno+V64z1v0ocyDwYVhOEJIDGb0rQxJhItpxqVmY6s19AjKye4FAderSq4BkGa1J+M66UOYnDEeSYUE87Ux4DzFRbFxxpVT1o5+bMOzWf73mrEEa7Q8JIii7vq8+XNZf14ehI8-hg4belnEaMRA3klzeD5JbFXbGMMUxCXWQXfVbKcviMuSFRN5hxIZsUtBVQVkSM0WJwt01tDrW1XBdwTPfxFkqlGcUDJEq81feHl7LeHk83TnL9oK6tfIAJLYDoqBsSiyhAugKQALaNjoK8oRFvj0+8kRsJlCiGVIyikNLxlOsVQktpqhAA */
   createMachine(
     {
       id: "Transfer Machine",
@@ -19,35 +19,48 @@ export const transferMachine =
       },
       tsTypes: {} as import("./transfer.machine.typegen").Typegen0,
       schema: {
-        services: {} as {
-          getTrades: {
-            type: string
-            data: Trade[]
-          }
-          loadBeneficiaries: {
-            type: string
-            data: Beneficiary[]
-          }
-        },
+        services: {} as
+          {
+            getTrades: {
+              type: string
+              data: Trade[]
+            }
+            loadBeneficiaries: {
+              type: string
+              data: Beneficiary[]
+            },
+            bookTrade: {
+              type: string
+              data: Trade
+            }
+
+          },
         events: {} as
           | {
-            type: "QUOTE_READY";
+            type: "QUOTE_READY"
             quoteData: Quote;
           } | {
-            type: "Trade Select",
+            type: "Trade Select"
             trade: Trade
           } | {
             type: "GO_BACK"
           } | {
             type: "GO_NEXT"
           } | {
-            type: "NEW_TRADE",
+            type: "NEW_TRADE"
+          } | {
+            type: "BOOK_TRADE"
+          } | {
+            type: "DONE"
+            trade: Trade
           }
       },
       states: {
         "Loading Trades": {
           invoke: {
-            src: "getTrades", // Service name
+            // Service name
+            src: "getTrades",
+
             onDone: [
               {
                 actions: "assignTradesToContext",
@@ -57,12 +70,7 @@ export const transferMachine =
               {
                 target: "Get Quote",
               },
-            ],
-            onError: [
-              {
-                target: "Error",
-              },
-            ],
+            ]
           },
         },
 
@@ -75,14 +83,15 @@ export const transferMachine =
             GO_BACK: {
               target: "Loading Trades"
             },
-            NEW_TRADE:{
+            NEW_TRADE: {
               target: "Get Quote"
             }
 
           }
         },
+
         "Choose Beneficiaries": {
-          on:{
+          on: {
             GO_BACK: {
               target: "Pick Trade"
             }
@@ -101,27 +110,35 @@ export const transferMachine =
             "Select Beneficiaries": {}
           },
         },
+
         "Get Quote": {
           on: {
             "QUOTE_READY": {
               actions: "assignQuoteFormInputToContext",
               target: "Book Trade"
             },
-            "GO_BACK":[
+            "GO_BACK": [
               {
                 target: "Pick Trade",
                 cond: "Has Trades in Context"
-              },{
+              }, {
                 target: "Loading Trades"
               }
             ]
           },
-          
-        },
-        "Book Trade":{},
 
-        "Instructing Payment": {},
-        Error: {},
+        },
+        "Book Trade": {
+          on: {
+            GO_BACK: "Get Quote",
+            DONE: {
+              actions: "assignCurrentTrade",
+              target: "Choose Beneficiaries"
+            }
+          },
+
+        },
+        "Instructing Payment": {}
       },
     },
     {
@@ -131,7 +148,7 @@ export const transferMachine =
           return (event as { data: Trade[] }).data.length > 0
           // return context.trades.length >= 0
         },
-        "Has Trades in Context":(context, event)=> {
+        "Has Trades in Context": (context, event) => {
           const res = context.trades.length > 0
           console.log(`Condition "Has Trades in Context" -> `, res)
           return res

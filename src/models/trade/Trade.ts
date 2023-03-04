@@ -1,6 +1,6 @@
 export type Trade = {
   id:number
-  date: string
+  date?: string
   currencySell: string
   amountSell: number
   currencyBuy:string

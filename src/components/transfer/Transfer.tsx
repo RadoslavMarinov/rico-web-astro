@@ -7,17 +7,21 @@ import {
   getAllByCurrency,
 } from "../../models/beneficiaries/getBeneficiaries";
 import QuoteForm from "../quote/QuoteForm";
+import BookTrade from "../Trade/BookTrade";
+import { Trade } from "../../models/trade/Trade";
 
 interface TransferProps extends React.PropsWithChildren {}
 
 const Transfer: React.FC = ({ children }: TransferProps) => {
   const [state, send] = useMachine(transferMachine, {
     services: {
-      getTrades: async () =>{
-
-        const trades = await getTrades({ delayMs: 300, numberOfTrades:8  })
-        console.log('Service getTrades done ', trades)
-        return trades
+      getTrades: async () => {
+        const trades = await getTrades({
+          delayMs: 300,
+          numberOfTrades: 8,
+        });
+        console.log("Service getTrades done ", trades);
+        return trades;
       },
       loadBeneficiaries: (context) =>
         getAllByCurrency(context.currentTrade.currencyBuy, {
@@ -42,11 +46,20 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
               currencyBuy="EUR"
               currencySell="GBP"
               onDone={(quote) => {
-                console.log(`TRRade -> `, quote);
+                console.log(`Get Quote Trade -> `, quote);
                 send({ type: "QUOTE_READY", quoteData: quote });
               }}
               onBack={() => send({ type: "GO_BACK" })}
             />
+          </div>
+        )}
+        {state.matches("Book Trade") && (
+          <div id="Book Trade">
+            <BookTrade
+              quote={state.context.quoteFormData}
+              onBack={() => send({ type: "GO_BACK" })}
+              onDone={(trade: Trade) => {send({ type: "DONE", trade })}}
+            ></BookTrade>
           </div>
         )}
         {state.matches("Pick Trade") && (
