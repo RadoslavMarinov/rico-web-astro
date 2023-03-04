@@ -2,6 +2,7 @@ import { useMachine } from "@xstate/react";
 import React from "react";
 import { beneficiaryMachine } from "../../machines/baneficiary.machine";
 import { Beneficiary } from "../../models/beneficiaries/Beneficiary";
+import TextInput from "../inputs/TextInput";
 
 export type BeneficiaryProps = {
   beneficiary: Beneficiary;
@@ -39,15 +40,29 @@ const Beneficiary = ({ beneficiary }: BeneficiaryProps) => {
           </label>
         </div>
         {state.matches("Enabled") && (
-          <div className="flex flex-row justify-around">
-            <input type="lis" placeholder="Amount"/>
-            <select name="Reason"  id="reason">
-              <option value="A;al">AAAA</option>
-              <option value="Blaal">BBBB</option>
-              <option value="NAa">CCCC</option>
+          <div className="flex flex-row justify-around items-center">
+            <TextInput
+              initValue=""
+              onChange={(value) => {
+                console.log(`TEXT INPUT CHANGE = `, value);
+                send({ type: "SET_AMOUNT", value: value });
+              }}
+              classes="h-8 "
+            />
+            <select
+              className="h-8 outline-none border border-1 border-solid border-gray-400 bg-gray-50 rounded-md cursor-pointer hover:shadow-md focus:border-2 focus:border-blue-600"
+              name="Reason"
+              id="reason"
+              defaultValue={"Choose Reason"}
+              onChange={(e)=>{send({ type:"SET_REASON" ,value: e.target.value as Reason })}}
+            >
+              <option value="Choose Reason" hidden>Choose Reason</option>
+              <option value="Paying debts">Paying debts</option>
+              <option value="Paying loose women">Paying loose women</option>
+              <option value="Buying drugs">Buying drugs</option>
             </select>
             <div
-              className="flex flex-col mt-4+"
+              className="flex flex-col basis-2/5  [&>*]:pl-[20%]"
               data-testid="beneficiary-details"
             >
               <div className="flex flex-row justify-start">
@@ -68,6 +83,7 @@ const Beneficiary = ({ beneficiary }: BeneficiaryProps) => {
       </div>
       <div className="flex flex-row justify-center m-4 p-2 ">
         <pre>{JSON.stringify(state.value, null, 2)}</pre>
+        <pre>{JSON.stringify(state.context, null, 2)}</pre>
       </div>
     </div>
   );

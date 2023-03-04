@@ -115,16 +115,6 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
             {state.context.beneficiaries?.map((b) => {
               return (
                 <Beneficiary beneficiary={b} key={b.id}/>
-                // <div key={b.id} className="mx-4  border-solid border-2 border-red-200">
-                //   <div className="flex flex-row [&>*]:w-1/4 [&>*]:text-center">
-                //     <div className="flex flex-col justify-center">
-                //       {b.id}
-                //     </div>
-                //     <div>{b.currency}</div>
-                //     <div>{b.iban}</div>
-                //     <input type="checkbox" />
-                //   </div>
-                // </div>
               );
             })}
             <div className="flex flex-col items-center">
