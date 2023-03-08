@@ -4,7 +4,8 @@
   export interface Typegen0 {
         '@@xstate/typegen': true;
         internalEvents: {
-          "xstate.init": { type: "xstate.init" };
+          "": { type: "" };
+"xstate.init": { type: "xstate.init" };
         };
         invokeSrcNameMap: {
           
@@ -25,12 +26,12 @@
           
         };
         eventsCausingGuards: {
-          
+          "formReady": "";
         };
         eventsCausingServices: {
           
         };
-        matchesStates: "Disabled" | "Enabled" | "Enabled.Filling" | { "Enabled"?: "Filling"; };
+        matchesStates: "Disabled" | "Enabled" | "Enabled.Check Form Readiness" | "Enabled.Filling Form" | "Enabled.Form Ready" | { "Enabled"?: "Check Form Readiness" | "Filling Form" | "Form Ready"; };
         tags: never;
       }
   

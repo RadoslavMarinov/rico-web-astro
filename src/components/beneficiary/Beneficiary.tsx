@@ -1,6 +1,9 @@
 import { useMachine } from "@xstate/react";
 import React from "react";
-import { beneficiaryMachine } from "../../machines/baneficiary.machine";
+import {
+  beneficiaryMachine,
+  Reason,
+} from "../../machines/baneficiary.machine";
 import { Beneficiary } from "../../models/beneficiaries/Beneficiary";
 import TextInput from "../inputs/TextInput";
 
@@ -42,9 +45,9 @@ const Beneficiary = ({ beneficiary }: BeneficiaryProps) => {
         {state.matches("Enabled") && (
           <div className="flex flex-row justify-around items-center">
             <TextInput
-              initValue=""
+              initValue={state.context.amount}
               onChange={(value) => {
-                console.log(`TEXT INPUT CHANGE = `, value);
+                // console.log(`TEXT INPUT CHANGE = `, value);
                 send({ type: "SET_AMOUNT", value: value });
               }}
               classes="h-8 "
@@ -54,11 +57,22 @@ const Beneficiary = ({ beneficiary }: BeneficiaryProps) => {
               name="Reason"
               id="reason"
               defaultValue={"Choose Reason"}
-              onChange={(e)=>{send({ type:"SET_REASON" ,value: e.target.value as Reason })}}
+              value={state.context.reason}
+              onChange={(e) => {
+                // console.log(`Selcted=> `, e.target.value)
+                send({
+                  type: "SET_REASON",
+                  value: e.target.value as Reason,
+                });
+              }}
             >
-              <option value="Choose Reason" hidden>Choose Reason</option>
+              <option value="Choose Reason" hidden>
+                Choose Reason
+              </option>
               <option value="Paying debts">Paying debts</option>
-              <option value="Paying loose women">Paying loose women</option>
+              <option value="Paying loose women">
+                Paying loose women
+              </option>
               <option value="Buying drugs">Buying drugs</option>
             </select>
             <div
