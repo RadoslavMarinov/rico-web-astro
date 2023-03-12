@@ -5,14 +5,33 @@ import {
   Reason,
 } from "../../machines/baneficiary.machine";
 import { Beneficiary } from "../../models/beneficiaries/Beneficiary";
+import { Payment } from "../../models/beneficiaries/BeneficiaryPayment";
 import TextInput from "../inputs/TextInput";
 
 export type BeneficiaryProps = {
   beneficiary: Beneficiary;
+  onReady:(payment: Payment)=>void
+  onDisable:(id:string)=>void
 };
 
-const Beneficiary = ({ beneficiary }: BeneficiaryProps) => {
-  const [state, send] = useMachine(beneficiaryMachine);
+const Beneficiary = ({ beneficiary, onReady, onDisable }: BeneficiaryProps) => {
+  const [state, send] = useMachine(beneficiaryMachine, {
+    context:{
+      id: beneficiary.id
+    },
+    actions: {
+      "formReady":((ctx, ev )=>{
+        const formReadyData = {
+          ...beneficiary,
+          amount: parseFloat(ctx.amount),
+        }
+        onReady(formReadyData)
+      }),
+      "onDisabled":((ctx, ev)=>{
+        onDisable(ctx.id)
+      })
+    }
+  });
 
   return (
     <div
@@ -56,7 +75,6 @@ const Beneficiary = ({ beneficiary }: BeneficiaryProps) => {
               className="h-8 outline-none border border-1 border-solid border-gray-400 bg-gray-50 rounded-md cursor-pointer hover:shadow-md focus:border-2 focus:border-blue-600"
               name="Reason"
               id="reason"
-              defaultValue={"Choose Reason"}
               value={state.context.reason}
               onChange={(e) => {
                 // console.log(`Selcted=> `, e.target.value)

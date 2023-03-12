@@ -1,5 +1,6 @@
 import { assign, createMachine } from "xstate";
 import { Beneficiary } from "../../models/beneficiaries/Beneficiary";
+import { Payment } from "../../models/beneficiaries/BeneficiaryPayment";
 import { getAllBeneficiaries, getAllByCurrency } from "../../models/beneficiaries/getBeneficiaries";
 import { Quote } from "../../models/quote/Quote";
 import { Trade } from "../../models/trade/Trade";
@@ -16,6 +17,7 @@ export const transferMachine =
         beneficiaries: [] as Beneficiary[],
         errorMessage: undefined as string | undefined,
         quoteFormData: {} as Quote,
+        payments: [] as Payment[]
       },
       tsTypes: {} as import("./transfer.machine.typegen").Typegen0,
       schema: {
@@ -53,6 +55,12 @@ export const transferMachine =
           } | {
             type: "DONE"
             trade: Trade
+          } | {
+            type: "UPDATE_BENEFICIARY_PAYMENT",
+            payment: Payment
+          } | {
+            type: "DISABLE_BENEFICIARY",
+            beneficiaryId: string
           }
       },
       states: {
@@ -107,7 +115,16 @@ export const transferMachine =
                 }
               },
             },
-            "Select Beneficiaries": {}
+            "Select Beneficiaries": {
+              on: {
+                "UPDATE_BENEFICIARY_PAYMENT": {
+                  actions: ["updateBeneficiaryPayment"]
+                },
+                "DISABLE_BENEFICIARY": {
+                  actions: ["deleteBeneficiaryPayment"]
+                }
+              }
+            }
           },
         },
 
@@ -155,6 +172,28 @@ export const transferMachine =
         }
       },
       actions: {
+        deleteBeneficiaryPayment: assign((ctx, ev)=>{
+          
+          let newPayments = [...ctx.payments]
+          newPayments = newPayments.filter(p=> p.id !== ev.beneficiaryId)
+          
+          return {
+            payments: newPayments
+          }
+        }),
+        updateBeneficiaryPayment: assign((context, event) => {
+          const newPayments = [...context.payments]
+          const existingPayment = newPayments.find(p => p.id === event.payment.id)
+          if (existingPayment) {
+            Object.assign(existingPayment, event.payment)
+          } else {
+            newPayments.push(event.payment)
+            context.payments.push(event.payment)
+          }
+          return {
+            payments: newPayments
+          }
+        }),
         assignBeneficiariesToContext: assign((contex, event) => {
           console.log(`assignBeneficiariesToContext -> `, event.data);
           return {

@@ -23,6 +23,8 @@
 "assignCurrentTrade": "DONE" | "Trade Select";
 "assignQuoteFormInputToContext": "QUOTE_READY";
 "assignTradesToContext": "done.invoke.Transfer Machine.Loading Trades:invocation[0]";
+"deleteBeneficiaryPayment": "DISABLE_BENEFICIARY";
+"updateBeneficiaryPayment": "UPDATE_BENEFICIARY_PAYMENT";
         };
         eventsCausingDelays: {
           

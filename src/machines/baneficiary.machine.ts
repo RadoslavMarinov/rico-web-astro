@@ -3,16 +3,18 @@ import { actions, assign, createMachine } from "xstate";
 export type Reason = "" | "Paying debts" | "Paying loose women" | "Buying drugs"
 
 export const beneficiaryMachine = createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgFF90AjAG0gGIARASQGUBBAIQBkyBtAAwBdRKAAOAe1i4ALrgn5RIAB6IAjALUkATAE4ArADYBAgBxqAzABZTAw7oA0IAJ6IAtNsOmSA3Wv0W+voCAOz6YfoAvpFOaFh4hKQU1HQQJADC2GCYANYABABiEgBOqHkASmDoEARwsPSCIkggktJyCkqqCFYBJGqmFtqm4b66g9r6Tq4Iaho6PUZmZp4WuobRsRg4tUmUtJAZWbmFJWWV1bWw9XxqTeJSsvKKzV0LfWo9gf0C2haBU4hrFpZlZDAFbKZjCELBsQHFtolyHtUiQiqUKlUIM56KwyAAVAD65TI7FYAHkAHKNJStR4dF7uNQTEjWAymXRWKwWEL2SEA7r6EjhfTaEJ+ELskISwzrGJwrYJYhIlIHNFnTHY3GE9gAWTJAFUKXjqc1ae1nqAuuySGs1DzfCFNBY1GD+T0hWFReLJdLZZt4jtlfs0gVcDQaAQoCdSjj8USSeSqcIaQ9zZ11KZvIYJSEXV4-NZwvznYKxms9KES6ZYfDFbsVSGwxH8FG1bHtXrDcbk6bU090wg3H4SOYxYZ-KFdNoXSFi-4batDBXof4xTWFYHGLhYA36GQKVxeCb7m1+wzB79tH1DFyNLnuRZ+R4vD4-EFIePTNo9FZonL8BIEBwEotY7Cmp70pa7hDAI163qEljQk+VjaLBzooQIXLOgM2iguuAaIskwbgXSFoqIy0IslYbIclyPK6KYVhPrMV6DOyBhTpYYxSvhCJKkRKKZNk+RqhiFyEFcJFpueN4kMYXKGNY0Jfoh-LTlmYorB8KGoQxvF1kGKKiecWJSWeUEzJhQoypCIyzDyX5PrhI5DAxYoMV4KkwnKoGEciqpNpG0aoGZkHkTM342kEgQMaCtqhPy+izFFXizGofjGJmv4+RuiJbjuxG9hBZFdG4fwsp47Lsl4IRWD8ahPn8V7mBhPwWMYQS6CEf6REAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgFF90AjAG0gGIARASQGUBBAIQBkyBtAAwBdRKAAOAe1i4ALrgn5RIAB6IAjADYNJAEwD9AgMyG1ADgDsAVnPmdAGhABPRDp3a1Oy0Z2GAnBp1TN0sAXxCHNCw8QlIKajoIEgAxXBoaAigAAiSJACdUelYyABUAfQAlMnZWAHkAOUERJBBJaTkFJVUEAJ0SQysjABYNQYERwcsHZwQ1X3MSAwEJi0G1YzMwiIwcAmJySlpIZNT0-Cyc-MKS0vYAWRqAVTrixqVW2XlFZq6evoHDYajcaTJwuXyGPpeJamAReQwaSymTYgSI7GL7eJHADC2DAmAA1tk8qhMuUwOgILtYLB6K9mu92l9QD9zKYSGYrINzAiBL4BGYpohEb1RvpLBNzHyNP1kajons4odEji8YSLiSyRSqTS+GomuIpB8Ot9EBoggsoaYtDD9LNBTNLGoFgYzLNLOL+aFwijtvLYgcEsliaTyRBHFcypVqvU6Qa2p9OqbXH84YCxoMJvbDKZfCRzAYvK4Eb5TF6tlFdv7MYl1SGKeGimU7o9nrGWobGYnusn+qmRunM6CEIMrRaxTpRoETGNZb7KyRGLhYNX6GQ6lxeG2GQmTTMtLpFusLNZbFnk1zU9ZPGpLG4wt78BIIHAlHLK28OzvmYgALQae0-hOzr6DoahrIEvhuDos4VuiioJB+8bGt+CD9NoAjHoYAjcqYai2Go9rSiQUL6AiljTtKSLem+cEBkcKRpBkRL5IhRpMioiBcrmcxeGYcyDAC5iGPaoHzJBhZmNmvjuhYMFogqdHKriBLMRqobaqxna7r4OkkKYGawqseiDPaXK9KJ-hCaWljghMcl+hiSpBvkdZhppX4ccOQEYVYWE4XhoGmaYbIXksGj4QCHj2fOi7Lkq7nIZ5gz2EOniWOyxjwjYfizAihj3iEQA */
   initial: "Disabled",
-  tsTypes: {} as import("./baneficiary.machine.typegen").Typegen0,
+  tsTypes: {} as import("./baneficiary.machine.typegen").Typegen0, 
   context: {
+    id:"",
     amount: "",
     enabled: false,
     reason: ""
   },
   schema: {
     context: {} as {
+      id:string
       enabled: boolean
       reason: Reason
       amount: string
@@ -32,24 +34,38 @@ export const beneficiaryMachine = createMachine({
   },
   states: {
     "Enabled": {
-      initial: "Filling Form",
+      initial: "Check Form Readiness",
       on: {
         DISABLE: {
           target: "Disabled",
           actions: [
-            "assignDisabledToContext"
+            "assignDisabledToContext",
+            "onDisabled"
           ]
         }
       },
       states: {
+        "Filling Form": {
+          entry:["onDisabled"],
+          on: {
+            "SET_REASON": [
+              { actions: ["assignReasonToContext"], target: "Check Form Readiness" },
+            ],
+            "SET_AMOUNT": [
+              { actions: ["assignAmountToContext"], target: "Check Form Readiness" },
+            ]
+          }
+        },
+
         "Check Form Readiness": {
           always: [
             { cond: "formReady", target: "Form Ready" },
             { target: "Filling Form" }
           ]
         },
-
+        
         "Form Ready": {
+          entry:"formReady",
           on: {
             "SET_REASON": [
               { actions: ["assignReasonToContext"], target: "Check Form Readiness" }
@@ -60,16 +76,6 @@ export const beneficiaryMachine = createMachine({
           }
         },
 
-        "Filling Form": {
-          on: {
-            "SET_REASON": [
-              { actions: ["assignReasonToContext"], target: "Check Form Readiness" },
-            ],
-            "SET_AMOUNT": [
-              { actions: ["assignAmountToContext"], target: "Check Form Readiness" },
-            ]
-          }
-        }
       }
     },
     "Disabled": {
@@ -87,29 +93,24 @@ export const beneficiaryMachine = createMachine({
   guards: {
     formReady: (ctx, ev) => {
       const result: boolean = ctx.amount.length > 0 && ctx.reason !== ""
-      console.log(`COND:formReady -> `, result)
       return result
     }
   },
   actions: {
     assignAmountToContext: assign((ctx, ev) => {
-      console.log(`ACTION assignAmountToContext -> `, ev)
       return {
         amount: ev.value
       }
     }),
     assignReasonToContext: assign((ctx, ev) => {
-      console.log(`ACTION assignReasonToContext -> `, ev)
       return {
         reason: ev.value
       }
     }),
     assignEnabledToContext: assign((ctx, ev) => {
-      console.log(`assignEnabledToContext EVENT -> `, ev)
       return { enabled: true }
     }),
     assignDisabledToContext: assign((ctx, ev) => {
-      console.log(`assignDisabledToContext EVENT -> `, ev)
       return { enabled: false }
     })
   }

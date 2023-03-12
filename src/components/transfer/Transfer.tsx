@@ -24,7 +24,7 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
         console.log("Service getTrades done ", event);
         return trades;
       },
-      loadBeneficiaries: (context,event) =>
+      loadBeneficiaries: (context, event) =>
         getAllByCurrency(context.currentTrade.currencyBuy, {
           latencyMS: 300,
         }),
@@ -59,7 +59,9 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
             <BookTrade
               quote={state.context.quoteFormData}
               onBack={() => send({ type: "GO_BACK" })}
-              onDone={(trade: Trade) => {send({ type: "DONE", trade })}}
+              onDone={(trade: Trade) => {
+                send({ type: "DONE", trade });
+              }}
             ></BookTrade>
           </div>
         )}
@@ -114,7 +116,16 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
           >
             {state.context.beneficiaries?.map((b) => {
               return (
-                <Beneficiary beneficiary={b} key={b.id}/>
+                <Beneficiary
+                  beneficiary={b}
+                  key={b.id}
+                  onDisable = { (id)=>{
+                    send({type: "DISABLE_BENEFICIARY", beneficiaryId: b.id})
+                  }}
+                  onReady={(beneficiaryPayment) => {
+                    send({type:"UPDATE_BENEFICIARY_PAYMENT", payment: beneficiaryPayment})
+                  }}
+                />
               );
             })}
             <div className="flex flex-col items-center">
@@ -137,7 +148,7 @@ const Transfer: React.FC = ({ children }: TransferProps) => {
       </div>
       <div className="w-full h-2 mb-28 mt-8 bg-slate-500"></div>
       <div>
-        <pre>{JSON.stringify(state.context, undefined, 2)}</pre>
+        <pre>{JSON.stringify(state.context.payments, undefined, 2)}</pre>
       </div>
       {children}
     </div>

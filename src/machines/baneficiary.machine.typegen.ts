@@ -11,7 +11,7 @@
           
         };
         missingImplementations: {
-          actions: never;
+          actions: "formReady" | "onDisabled";
           delays: never;
           guards: never;
           services: never;
@@ -21,6 +21,8 @@
 "assignDisabledToContext": "DISABLE";
 "assignEnabledToContext": "ENABLE";
 "assignReasonToContext": "SET_REASON";
+"formReady": "";
+"onDisabled": "" | "DISABLE";
         };
         eventsCausingDelays: {
           
